@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
-const ensureAuth = require("../middleware/auth");
+const { ensureAuth } = require("../middleware/auth");
 
 // ensure cart existence in session
 function ensureCart(req) {
@@ -10,6 +10,7 @@ function ensureCart(req) {
     req.session.cart = { items: {}, totalQty: 0, totalPrice: 0 };
   return req.session.cart;
 }
+console.log("ensureAuth type:", typeof ensureAuth);
 
 // add to cart
 router.post("/add/:id", ensureAuth, async (req, res) => {

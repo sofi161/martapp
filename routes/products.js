@@ -3,8 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
 const multer = require("multer");
-const ensureAuth = require("../middleware/auth");
-const ensureRole = require("../middleware/auth");
+const { ensureAuth, ensureRole } = require("../middleware/auth");
 // multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),

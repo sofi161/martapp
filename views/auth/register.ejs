@@ -1,19 +1,383 @@
-<%- include('../partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - MartApp</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-<h2>Register</h2>
-<form action="/register" method="post">
-  <label>Name</label><br />
-  <input type="text" name="name" required /><br />
-  <label>Email</label><br />
-  <input type="email" name="email" required /><br />
-  <label>Password</label><br />
-  <input type="password" name="password" required /><br />
-  <label>Role</label><br />
-  <select name="role">
-    <option value="buyer">Buyer</option>
-    <option value="seller">Seller</option></select
-  ><br />
-  <button type="submit">Register</button>
-</form>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
 
-<%- include('../partials/footer') %>
+      .register-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 1000px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .register-left {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+      }
+
+      .register-left h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .register-left p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+
+      .feature-list {
+        text-align: left;
+        margin-top: 2rem;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+      }
+
+      .feature-icon {
+        font-size: 1.5rem;
+      }
+
+      .register-right {
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .register-right h2 {
+        color: #42176c;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .register-subtitle {
+        color: #666;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        background: white;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #42176c;
+        box-shadow: 0 0 0 3px rgba(66, 23, 108, 0.1);
+      }
+
+      .form-group input::placeholder {
+        color: #999;
+      }
+
+      .form-group select {
+        cursor: pointer;
+      }
+
+      .role-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .role-option {
+        position: relative;
+      }
+
+      .role-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .role-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: white;
+      }
+
+      .role-option input[type="radio"]:checked + .role-card {
+        border-color: #42176c;
+        background: rgba(66, 23, 108, 0.05);
+      }
+
+      .role-card:hover {
+        border-color: #42176c;
+      }
+
+      .role-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .role-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+      }
+
+      .role-desc {
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .btn-register {
+        width: 100%;
+        background: #42176c;
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+      }
+
+      .btn-register:hover {
+        background: #331258;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(66, 23, 108, 0.3);
+      }
+
+      .btn-register:active {
+        transform: translateY(0);
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+        color: #999;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .divider span {
+        padding: 0 1rem;
+        font-size: 0.9rem;
+      }
+
+      .login-link {
+        text-align: center;
+        color: #666;
+        font-size: 0.95rem;
+      }
+
+      .login-link a {
+        color: #42176c;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .login-link a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .register-container {
+          grid-template-columns: 1fr;
+          max-width: 500px;
+        }
+
+        .register-left {
+          padding: 2rem;
+        }
+
+        .register-left h1 {
+          font-size: 2rem;
+        }
+
+        .feature-list {
+          margin-top: 1rem;
+        }
+
+        .register-right {
+          padding: 2rem;
+        }
+
+        .role-options {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-container">
+      <div class="register-right">
+        <h2>Register</h2>
+        <p class="register-subtitle">
+          Fill in your details to create an account
+        </p>
+
+        <form action="/register" method="post">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="John Doe"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Create a strong password"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>I want to</label>
+            <div class="role-options">
+              <div class="role-option">
+                <input
+                  type="radio"
+                  name="role"
+                  value="buyer"
+                  id="buyer"
+                  checked
+                />
+                <label for="buyer" class="role-card">
+                  <div class="role-icon">🛍️</div>
+                  <div class="role-title">Buy Products</div>
+                  <div class="role-desc">Shop from sellers</div>
+                </label>
+              </div>
+              <div class="role-option">
+                <input type="radio" name="role" value="seller" id="seller" />
+                <label for="seller" class="role-card">
+                  <div class="role-icon">🏪</div>
+                  <div class="role-title">Sell Products</div>
+                  <div class="role-desc">List your items</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-register">Create Account</button>
+        </form>
+
+        <div class="divider">
+          <span>or</span>
+        </div>
+
+        <p class="login-link">
+          Already have an account? <a href="/login">Sign in</a>
+        </p>
+      </div>
+      <div class="register-left">
+        <h1>Join MartApp</h1>
+        <p>
+          Create your account and start buying or selling quality products today
+        </p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Secure & trusted platform</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Easy product listing</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>Fast checkout process</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">✓</span>
+            <span>24/7 customer support</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

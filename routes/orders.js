@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
-const ensureAuth = require("../middleware/auth");
+const { ensureAuth } = require("../middleware/auth");
 
 // checkout - create order
 router.post("/checkout", ensureAuth, async (req, res) => {

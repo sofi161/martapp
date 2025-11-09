@@ -1,13 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>IndiaMart Clone</title>
-    <link rel="stylesheet" href="/public/css/style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MartApp - Footer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1;
+        padding: 2rem;
+      }
+
+      .footer {
+        background: #42176c;
+        color: white;
+        padding: 3rem 2rem 2rem;
+        margin-top: auto;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.75rem;
+      }
+
+      .footer-section ul li a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      .footer-section ul li a:hover {
+        color: #fff;
+        transform: translateX(5px);
+      }
+
+      .footer-about p {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-links a {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+      }
+
+      .social-links a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 2rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.7);
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-bottom p {
+        font-size: 0.95rem;
+      }
+
+      .footer-bottom a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-bottom a:hover {
+        color: #fff;
+      }
+
+      @media (max-width: 768px) {
+        .footer {
+          padding: 2rem 1rem 1.5rem;
+        }
+
+        .footer-container {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .social-links {
+          justify-content: center;
+        }
+      }
+    </style>
   </head>
   <body>
     <footer class="footer">
-      <p>&copy; <%= new Date().getFullYear() %> IndiaMart Clone — MVP</p>
+      <div class="footer-container">
+        <div class="footer-section footer-about">
+          <h3>MartApp</h3>
+          <p>
+            Your trusted marketplace for buying and selling quality products.
+            Connect with sellers and buyers in a seamless shopping experience.
+          </p>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook">📘</a>
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Instagram">📷</a>
+            <a href="#" aria-label="LinkedIn">💼</a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/products">Products</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>For Sellers</h3>
+          <ul>
+            <li><a href="/register">Become a Seller</a></li>
+            <li><a href="/products/new">Add Product</a></li>
+            <li><a href="/seller/dashboard">Seller Dashboard</a></li>
+            <li><a href="/help">Seller Help</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/shipping">Shipping Info</a></li>
+            <li><a href="/returns">Returns</a></li>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 MartApp — MVP | Built with ❤️ |
+          <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+        </p>
+      </div>
     </footer>
   </body>
 </html>
