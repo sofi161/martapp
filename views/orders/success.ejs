@@ -1,0 +1,10 @@
+<%- include('../partials/header') %>
+
+<h2>Order Placed</h2>
+
+<p>Thank you! Your order <strong><%= order._id %></strong> has been placed.</p>
+<p>Total: ₹<%= order.totalAmount %></p>
+
+<a href="/orders">View my orders</a>
+
+<%- include('../partials/footer') %>

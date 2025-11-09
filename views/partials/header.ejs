@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>IndiaMart Clone</title>
+    <link rel="stylesheet" href="/public/css/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <a class="brand" href="/">IndiaMartClone</a>
+      <nav>
+        <a href="/products">Products</a>
+        <% if(!currentUser){ %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        <% } else { %>
+        <span class="hi"
+          >Hi <%= currentUser.name %> (<%= currentUser.role %>)</span
+        >
+        <% if(currentUser.role === 'seller'){ %>
+        <a href="/products/new">Add Product</a>
+        <% } %>
+        <a href="/cart"
+          >Cart (<%= (session.cart && session.cart.totalQty) || 0 %>)</a
+        >
+        <form style="display: inline" action="/logout" method="post">
+          <button class="btn-logout">Logout</button>
+        </form>
+        <% } %>
+      </nav>
+    </header>
+    <main class="container"></main>
+  </body>
+</html>

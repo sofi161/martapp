@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+
+<h2>Products</h2>
+
+<form method="get" action="/products" class="search-form">
+  <input
+    type="text"
+    name="q"
+    placeholder="Search..."
+    value="<%= typeof q !== 'undefined' ? q : '' %>"
+  />
+  <input type="text" name="category" placeholder="Category" />
+  <input type="number" name="min" placeholder="Min price" />
+  <input type="number" name="max" placeholder="Max price" />
+  <button type="submit">Search</button>
+</form>
+
+<div class="grid">
+  <% products.forEach(p => { %>
+  <div class="card">
+    <a href="/products/<%= p._id %>">
+      <img
+        src="<%= (p.images && p.images[0]) || '/public/img/placeholder.png' %>"
+        alt="<%= p.title %>"
+      />
+    </a>
+    <h3><a href="/products/<%= p._id %>"><%= p.title %></a></h3>
+    <p>₹<%= p.price %></p>
+    <p><%= p.category %></p>
+    <form action="/cart/add/<%= p._id %>" method="post">
+      <input type="hidden" name="qty" value="1" />
+      <button type="submit">Add to Cart</button>
+    </form>
+  </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

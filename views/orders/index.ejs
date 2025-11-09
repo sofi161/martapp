@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+
+<h2>My Orders</h2>
+
+<% if(!orders || orders.length === 0){ %>
+<p>No orders yet.</p>
+<% } else { %> <% orders.forEach(o => { %>
+<div class="order-card">
+  <p>Order ID: <%= o._id %></p>
+  <p>Date: <%= new Date(o.createdAt).toLocaleString() %></p>
+  <p>Status: <%= o.status %></p>
+  <p>Total: ₹<%= o.totalAmount %></p>
+  <ul>
+    <% o.items.forEach(i => { %>
+    <li><%= i.qty %> x <%= i.product.title %> @ ₹<%= i.priceAtPurchase %></li>
+    <% }) %>
+  </ul>
+</div>
+<% }) %> <% } %> <%- include('../partials/footer') %>

@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+
+<div class="product-detail">
+  <div class="images">
+    <% if(product.images && product.images.length){ %> <%
+    product.images.forEach(img => { %>
+    <img src="<%= img %>" alt="product image" />
+    <% }) %> <% } else { %>
+    <img src="/public/img/placeholder.png" alt="placeholder" />
+    <% } %>
+  </div>
+
+  <div class="info">
+    <h2><%= product.title %></h2>
+    <p>₹<%= product.price %></p>
+    <p><strong>Category:</strong> <%= product.category %></p>
+    <p><%= product.description %></p>
+    <p>
+      <strong>Seller:</strong> <%= product.seller ? product.seller.name :
+      'Unknown' %>
+    </p>
+
+    <% if(currentUser && currentUser.role === 'buyer'){ %>
+    <form action="/cart/add/<%= product._id %>" method="post">
+      <label>Quantity</label>
+      <input type="number" name="qty" value="1" min="1" />
+      <button type="submit">Add to Cart</button>
+    </form>
+    <% } else if(!currentUser) { %>
+    <p><a href="/login">Login as buyer to contact seller / add to cart</a></p>
+    <% } %> <% if(currentUser && currentUser.role === 'seller' &&
+    String(product.seller) === currentUser.id){ %>
+    <a href="/products/<%= product._id %>/edit">Edit Product</a>
+    <form
+      action="/products/<%= product._id %>?_method=DELETE"
+      method="post"
+      style="display: inline"
+    >
+      <button type="submit">Delete</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
