@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> - MartApp</title>
+    <link rel="stylesheet" href="/css/seller.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <%- include('../partials/seller-header') %>
+
+    <div class="dashboard-container">
+      <%- include('../partials/seller-sidebar') %>
+
+      <main class="dashboard-main">
+        <div class="dashboard-header">
+          <h1>Dashboard Overview</h1>
+          <p>Welcome back! Here's what's happening with your store today.</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon products">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-info">
+              <h3><%= stats.totalProducts %></h3>
+              <p>Total Products</p>
+              <span class="stat-detail"
+                ><%= stats.activeProducts %> active</span
+              >
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon revenue">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-info">
+              <h3>$<%= stats.totalRevenue.toFixed(2) %></h3>
+              <p>Total Revenue</p>
+              <span class="stat-detail">All time</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon orders">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-info">
+              <h3><%= stats.pendingOrders %></h3>
+              <p>Pending Orders</p>
+              <span class="stat-detail"
+                ><%= stats.completedOrders %> completed</span
+              >
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon stock">
+              <i class="fas fa-warehouse"></i>
+            </div>
+            <div class="stat-info">
+              <h3><%= lowStockProducts.length %></h3>
+              <p>Low Stock Items</p>
+              <span class="stat-detail">Needs attention</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h2>Recent Orders</h2>
+            <a href="/seller/orders" class="btn-link">View All</a>
+          </div>
+          <div class="table-container">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (recentOrders.length > 0) { %> <%
+                recentOrders.forEach(order => { %>
+                <tr>
+                  <td>
+                    <a href="/seller/orders/<%= order._id %>"
+                      >#<%= order._id.toString().slice(-6) %></a
+                    >
+                  </td>
+                  <td><%= order.user ? order.user.name : 'Guest' %></td>
+                  <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                  <td><%= order.items.length %></td>
+                  <td>$<%= order.totalAmount.toFixed(2) %></td>
+                  <td>
+                    <span class="status-badge <%= order.status %>"
+                      ><%= order.status %></span
+                    >
+                  </td>
+                </tr>
+                <% }) %> <% } else { %>
+                <tr>
+                  <td colspan="6" class="no-data">No recent orders</td>
+                </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="dashboard-grid">
+          <!-- Low Stock Products -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2>Low Stock Alert</h2>
+              <a href="/seller/inventory" class="btn-link">Manage</a>
+            </div>
+            <div class="product-list">
+              <% if (lowStockProducts.length > 0) { %> <%
+              lowStockProducts.forEach(product => { %>
+              <div class="product-item">
+                <img
+                  src="<%= product.images[0] || '/images/placeholder.jpg' %>"
+                  alt="<%= product.name %>"
+                />
+                <div class="product-info">
+                  <h4><%= product.name %></h4>
+                  <p class="stock-warning">Only <%= product.stock %> left</p>
+                </div>
+                <a
+                  href="/seller/products/edit/<%= product._id %>"
+                  class="btn-icon"
+                >
+                  <i class="fas fa-edit"></i>
+                </a>
+              </div>
+              <% }) %> <% } else { %>
+              <p class="no-data">All products are well stocked!</p>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Recent Products -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2>Recent Products</h2>
+              <a href="/seller/products" class="btn-link">View All</a>
+            </div>
+            <div class="product-list">
+              <% if (recentProducts.length > 0) { %> <%
+              recentProducts.forEach(product => { %>
+              <div class="product-item">
+                <img
+                  src="<%= product.images[0] || '/images/placeholder.jpg' %>"
+                  alt="<%= product.name %>"
+                />
+                <div class="product-info">
+                  <h4><%= product.name %></h4>
+                  <p>$<%= product.price.toFixed(2) %></p>
+                </div>
+                <span class="status-badge <%= product.status %>"
+                  ><%= product.status %></span
+                >
+              </div>
+              <% }) %> <% } else { %>
+              <p class="no-data">
+                No products yet.
+                <a href="/seller/products/add">Add your first product</a>
+              </p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/seller-dashboard.js"></script>
+  </body>
+</html>

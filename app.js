@@ -12,6 +12,7 @@ const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/products");
 const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/orders");
+const sellerRoutes = require("./routes/seller");
 
 const app = express();
 
@@ -45,22 +46,42 @@ app.use(
 const sessionMiddleware = require("./middleware/sessionMiddleware");
 app.use(sessionMiddleware);
 
+// Attach user to req.user and res.locals for all routes
+app.use((req, res, next) => {
+  if (req.session && req.session.user) {
+    req.user = req.session.user;
+    res.locals.user = req.session.user;
+  }
+  next();
+});
+
 // routes
 app.use("/", authRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+app.use("/seller", sellerRoutes);
 
 // home route
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-// fallback
-app.use((req, res) => res.status(404).send("Not Found"));
+// Error handling middleware
+app.use((req, res, next) => {
+  res.status(404).render("error", { message: "Page not found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render("error", { message: "Something went wrong!" });
+});
 
 // server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Seller Dashboard: http://localhost:${PORT}/seller/dashboard`);
+});
+
+module.exports = app;

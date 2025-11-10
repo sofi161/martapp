@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - MartApp</title>
+    <link rel="stylesheet" href="/css/seller.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/seller-header') %>
+    
+    <div class="dashboard-container">
+        <%- include('../partials/seller-sidebar') %>
+        
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h1><%= title %></h1>
+                <p>Fill in the details below to add a new product to your store.</p>
+            </div>
+
+            <div class="form-container">
+                <form action="/seller/products/add" method="POST" class="product-form">
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="name">Product Name *</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                class="form-control" 
+                                required
+                                placeholder="Enter product name"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Price ($) *</label>
+                            <input 
+                                type="number" 
+                                id="price" 
+                                name="price" 
+                                class="form-control" 
+                                step="0.01"
+                                min="0"
+                                required
+                                placeholder="0.00"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Category *</label>
+                            <select id="category" name="category" class="form-control" required>
+                                <option value="">Select a category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Home & Garden">Home & Garden</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Books">Books</option>
+                                <option value="Toys">Toys</option>
+                                <option value="Food">Food</option>
+                                <option value="Beauty">Beauty</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stock">Stock Quantity *</label>
+                            <input 
+                                type="number" 
+                                id="stock" 
+                                name="stock" 
+                                class="form-control" 
+                                min="0"
+                                required
+                                placeholder="0"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="description">Description *</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                class="form-control" 
+                                required
+                                placeholder="Describe your product in detail..."
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="images">Product Images (URLs)</label>
+                            <input 
+                                type="text" 
+                                id="images" 
+                                name="images" 
+                                class="form-control" 
+                                placeholder="Enter image URLs separated by commas"
+                            >
+                            <small class="form-hint">Enter multiple image URLs separated by commas</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/seller/products" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+
+<style>
+.form-container {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    border: 1px solid var(--border);
+    max-width: 900px;
+}
+
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 6px;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.form-actions .btn {
+    min-width: 140px;
+}
+</style>
+</html>

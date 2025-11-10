@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - MartApp</title>
+    <link rel="stylesheet" href="/css/seller.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/seller-header') %>
+    
+    <div class="dashboard-container">
+        <%- include('../partials/seller-sidebar') %>
+        
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <div>
+                    <h1><%= title %></h1>
+                    <p>Manage your product inventory</p>
+                </div>
+                <a href="/seller/products/add" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Product
+                </a>
+            </div>
+
+            <div class="products-container">
+                <% if (products.length > 0) { %>
+                    <div class="products-grid">
+                        <% products.forEach(product => { %>
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="<%= product.images[0] || '/images/placeholder.jpg' %>" alt="<%= product.name %>">
+                                    <div class="product-badge <%= product.status %>">
+                                        <%= product.status %>
+                                    </div>
+                                </div>
+                                
+                                <div class="product-details">
+                                    <h3><%= product.name %></h3>
+                                    <p class="product-category"><%= product.category %></p>
+                                    
+                                    <div class="product-stats">
+                                        <div class="stat">
+                                            <span class="label">Price</span>
+                                            <span class="value">$<%= product.price.toFixed(2) %></span>
+                                        </div>
+                                        <div class="stat">
+                                            <span class="label">Stock</span>
+                                            <span class="value <%= product.stock < 10 ? 'low-stock' : '' %>">
+                                                <%= product.stock %>
+                                            </span>
+                                        </div>
+                                        <div class="stat">
+                                            <span class="label">Sales</span>
+                                            <span class="value"><%= product.sales || 0 %></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="product-actions">
+                                        <a href="/seller/products/edit/<%= product._id %>" class="btn-action edit">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <button 
+                                            class="btn-action toggle" 
+                                            onclick="toggleStatus('<%= product._id %>', '<%= product.status %>')"
+                                        >
+                                            <i class="fas fa-<%= product.status === 'active' ? 'eye-slash' : 'eye' %>"></i>
+                                            <%= product.status === 'active' ? 'Deactivate' : 'Activate' %>
+                                        </button>
+                                        <form action="/seller/products/delete/<%= product._id %>" method="POST" style="display: inline;">
+                                            <button 
+                                                type="submit" 
+                                                class="btn-action delete"
+                                                onclick="return confirm('Are you sure you want to delete this product?')"
+                                            >
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %>" class="page-link">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            <% } %>
+                            
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a 
+                                    href="?page=<%= i %>" 
+                                    class="page-link <%= i === currentPage ? 'active' : '' %>"
+                                >
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>" class="page-link">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h2>No Products Yet</h2>
+                        <p>Start by adding your first product to your store</p>
+                        <a href="/seller/products/add" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Your First Product
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function toggleStatus(productId, currentStatus) {
+            try {
+                const response = await fetch(`/seller/products/toggle-status/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to update product status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        }
+    </script>
+</body>
+</html>
+
+<style>
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.products-container {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border);
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.product-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.product-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.product-badge.active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.product-badge.inactive {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.product-details {
+    padding: 16px;
+}
+
+.product-details h3 {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.product-category {
+    color: var(--text-light);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.product-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: var(--light);
+    border-radius: 8px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat .label {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.stat .value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.stat .value.low-stock {
+    color: var(--warning-color);
+}
+
+.product-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    flex: 1;
+    min-width: 100px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-action:hover {
+    background-color: var(--light);
+}
+
+.btn-action.edit:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-action.delete:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.page-link {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    background-color: var(--light);
+}
+
+.page-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 64px 32px;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+
+.empty-state h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    margin-bottom: 24px;
+}
+</style>
+</html>
