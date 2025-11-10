@@ -14,6 +14,7 @@
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -23,59 +24,66 @@
 
       .login-container {
         background: white;
+        padding: 3rem;
         border-radius: 20px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        max-width: 1000px;
         width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        max-width: 450px;
       }
 
-      .login-left {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 3rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: white;
+      .login-header {
         text-align: center;
-      }
-
-      .login-left h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .login-left p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        line-height: 1.6;
-      }
-
-      .login-icon {
-        font-size: 5rem;
         margin-bottom: 2rem;
       }
 
-      .login-right {
-        padding: 3rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .login-right h2 {
-        color: #42176c;
+      .login-header h1 {
+        color: #333;
         font-size: 2rem;
         margin-bottom: 0.5rem;
       }
 
-      .login-subtitle {
+      .login-header p {
         color: #666;
-        margin-bottom: 2rem;
         font-size: 0.95rem;
+      }
+
+      /* Alert Styles */
+      .alert {
+        padding: 1rem 1.25rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-error {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+      }
+
+      .alert-success {
+        background: #efe;
+        border: 1px solid #cfc;
+        color: #3c3;
+      }
+
+      .alert-icon {
+        font-size: 1.25rem;
       }
 
       .form-group {
@@ -84,9 +92,9 @@
 
       .form-group label {
         display: block;
+        margin-bottom: 0.5rem;
         color: #333;
         font-weight: 600;
-        margin-bottom: 0.5rem;
         font-size: 0.95rem;
       }
 
@@ -102,166 +110,103 @@
 
       .form-group input:focus {
         outline: none;
-        border-color: #42176c;
-        box-shadow: 0 0 0 3px rgba(66, 23, 108, 0.1);
-      }
-
-      .form-group input::placeholder {
-        color: #999;
-      }
-
-      .forgot-password {
-        text-align: right;
-        margin-top: -0.5rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .forgot-password a {
-        color: #42176c;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-      }
-
-      .forgot-password a:hover {
-        text-decoration: underline;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
 
       .btn-login {
         width: 100%;
-        background: #42176c;
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        padding: 1rem;
         border-radius: 10px;
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
-        margin-bottom: 1.5rem;
       }
 
       .btn-login:hover {
-        background: #331258;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(66, 23, 108, 0.3);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
       }
 
-      .btn-login:active {
-        transform: translateY(0);
-      }
-
-      .divider {
-        display: flex;
-        align-items: center;
+      .login-footer {
         text-align: center;
-        margin: 1.5rem 0;
-        color: #999;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
       }
 
-      .divider::before,
-      .divider::after {
-        content: "";
-        flex: 1;
-        border-bottom: 1px solid #e0e0e0;
-      }
-
-      .divider span {
-        padding: 0 1rem;
-        font-size: 0.9rem;
-      }
-
-      .register-link {
-        text-align: center;
+      .login-footer p {
         color: #666;
         font-size: 0.95rem;
       }
 
-      .register-link a {
-        color: #42176c;
-        font-weight: 600;
+      .login-footer a {
+        color: #667eea;
         text-decoration: none;
+        font-weight: 600;
       }
 
-      .register-link a:hover {
+      .login-footer a:hover {
         text-decoration: underline;
       }
 
       @media (max-width: 768px) {
         .login-container {
-          grid-template-columns: 1fr;
-          max-width: 500px;
-        }
-
-        .login-left {
           padding: 2rem;
         }
 
-        .login-left h1 {
-          font-size: 2rem;
-        }
-
-        .login-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-
-        .login-right {
-          padding: 2rem;
+        .login-header h1 {
+          font-size: 1.75rem;
         }
       }
     </style>
   </head>
   <body>
     <div class="login-container">
-      <div class="login-left">
-        <h1>Welcome Back!</h1>
-        <p>Log in to access your account and continue shopping on MartApp</p>
+      <div class="login-header">
+        <h1>🛒 Welcome Back</h1>
+        <p>Login to your MartApp account</p>
       </div>
 
-      <div class="login-right">
-        <h2>Login</h2>
-        <p class="login-subtitle">
-          Enter your credentials to access your account
-        </p>
+      <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error">
+        <span class="alert-icon">⚠️</span>
+        <span><%= error %></span>
+      </div>
+      <% } %>
 
-        <form action="/login" method="post">
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="you@example.com"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-
-          <div class="forgot-password">
-            <a href="/forgot-password">Forgot password?</a>
-          </div>
-
-          <button type="submit" class="btn-login">Login</button>
-        </form>
-
-        <div class="divider">
-          <span>or</span>
+      <form action="/login" method="POST">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
         </div>
 
-        <p class="register-link">
-          Don't have an account? <a href="/register">Create one now</a>
-        </p>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+      </form>
+
+      <div class="login-footer">
+        <p>Don't have an account? <a href="/register">Register here</a></p>
       </div>
     </div>
   </body>

@@ -42,12 +42,8 @@ app.use(
   })
 );
 
-// expose current user & session to views
-app.use((req, res, next) => {
-  res.locals.currentUser = req.session.user || null;
-  res.locals.session = req.session;
-  next();
-});
+const sessionMiddleware = require("./middleware/sessionMiddleware");
+app.use(sessionMiddleware);
 
 // routes
 app.use("/", authRoutes);

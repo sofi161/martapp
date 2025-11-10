@@ -24,34 +24,40 @@
       }
 
       .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 2rem;
       }
 
       .page-header h2 {
         color: #42176c;
         font-size: 2rem;
-        margin-bottom: 0.5rem;
       }
 
       .page-subtitle {
         color: #666;
-        font-size: 1rem;
+        font-size: 0.95rem;
+        margin-top: 0.25rem;
       }
 
-      .search-form {
+      /* Search and Filter Bar */
+      .search-filter-bar {
         background: white;
-        padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1.25rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         margin-bottom: 2rem;
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr auto;
-        gap: 1rem;
-        align-items: center;
       }
 
-      .search-form input {
-        padding: 0.75rem 1rem;
+      .search-input-wrapper {
+        position: relative;
+        margin-bottom: 1rem;
+      }
+
+      .search-input-wrapper input {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 2.75rem;
         border: 2px solid #e0e0e0;
         border-radius: 8px;
         font-size: 0.95rem;
@@ -59,21 +65,63 @@
         font-family: inherit;
       }
 
-      .search-form input:focus {
+      .search-input-wrapper input:focus {
         outline: none;
         border-color: #42176c;
         box-shadow: 0 0 0 3px rgba(66, 23, 108, 0.1);
       }
 
-      .search-form input::placeholder {
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         color: #999;
+        font-size: 1.1rem;
       }
 
-      .btn-search {
+      .filters-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 0.75rem;
+        align-items: end;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+      }
+
+      .filter-group label {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: 500;
+      }
+
+      .filter-group select,
+      .filter-group input {
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        background: white;
+      }
+
+      .filter-group select:focus,
+      .filter-group input:focus {
+        outline: none;
+        border-color: #42176c;
+        box-shadow: 0 0 0 3px rgba(66, 23, 108, 0.1);
+      }
+
+      .btn-filter {
         background: #42176c;
         color: white;
         border: none;
-        padding: 0.75rem 2rem;
+        padding: 0.75rem 1.75rem;
         border-radius: 8px;
         font-size: 0.95rem;
         font-weight: 600;
@@ -82,12 +130,13 @@
         white-space: nowrap;
       }
 
-      .btn-search:hover {
+      .btn-filter:hover {
         background: #331258;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(66, 23, 108, 0.3);
       }
 
+      /* Products Grid */
       .products-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -116,6 +165,8 @@
         overflow: hidden;
         background: #f0f0f0;
         position: relative;
+        display: block;
+        text-decoration: none;
       }
 
       .product-image img {
@@ -189,6 +240,7 @@
         box-shadow: 0 4px 12px rgba(66, 23, 108, 0.3);
       }
 
+      /* Empty State */
       .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -213,14 +265,42 @@
         font-size: 1rem;
       }
 
+      /* Loading State */
+      .loading {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #42176c;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Responsive */
       @media (max-width: 768px) {
         .container {
           padding: 1rem;
         }
 
-        .search-form {
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .filters-row {
           grid-template-columns: 1fr;
-          padding: 1rem;
         }
 
         .products-grid {
@@ -247,106 +327,99 @@
     </style>
   </head>
   <body>
+    <%- include('../partials/header') %>
     <div class="container">
       <div class="page-header">
-        <h2>Products</h2>
-        <p class="page-subtitle">Browse our collection of quality products</p>
+        <div>
+          <h2>Products</h2>
+          <p class="page-subtitle">Browse our collection of quality products</p>
+        </div>
       </div>
 
-      <form method="get" action="/products" class="search-form">
-        <input type="text" name="q" placeholder="Search products..." value="" />
-        <input type="text" name="category" placeholder="Category" />
-        <input type="number" name="min" placeholder="Min price" />
-        <input type="number" name="max" placeholder="Max price" />
-        <button type="submit" class="btn-search">Search</button>
+      <!-- Search and Filter Bar -->
+      <form method="get" action="/products" class="search-filter-bar">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            name="q" 
+            placeholder="Search products..." 
+            value="<%= typeof query !== 'undefined' ? query : '' %>" 
+          />
+        </div>
+        
+        <div class="filters-row">
+          <div class="filter-group">
+            <label>Category</label>
+            <select name="category">
+              <option value="">All Categories</option>
+              <option value="electronics" <%= typeof category !== 'undefined' && category === 'electronics' ? 'selected' : '' %>>Electronics</option>
+              <option value="fashion" <%= typeof category !== 'undefined' && category === 'fashion' ? 'selected' : '' %>>Fashion</option>
+              <option value="home" <%= typeof category !== 'undefined' && category === 'home' ? 'selected' : '' %>>Home & Kitchen</option>
+              <option value="sports" <%= typeof category !== 'undefined' && category === 'sports' ? 'selected' : '' %>>Sports</option>
+              <option value="books" <%= typeof category !== 'undefined' && category === 'books' ? 'selected' : '' %>>Books</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Min Price (₹)</label>
+            <input 
+              type="number" 
+              name="min" 
+              placeholder="0" 
+              value="<%= typeof minPrice !== 'undefined' ? minPrice : '' %>"
+            />
+          </div>
+
+          <div class="filter-group">
+            <label>Max Price (₹)</label>
+            <input 
+              type="number" 
+              name="max" 
+              placeholder="100000" 
+              value="<%= typeof maxPrice !== 'undefined' ? maxPrice : '' %>"
+            />
+          </div>
+
+          <button type="submit" class="btn-filter">Filter</button>
+        </div>
       </form>
 
+      <!-- Products Grid (Dynamic) -->
       <div class="products-grid">
-        <!-- Product Card 1 -->
-        <div class="product-card">
-          <a href="/products/1" class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-              alt="Product"
-            />
-          </a>
-          <div class="product-info">
-            <span class="product-category">Electronics</span>
-            <a href="/products/1" class="product-title">Wireless Headphones</a>
-            <div class="product-price">₹2,499</div>
-            <form action="/cart/add/1" method="post">
-              <input type="hidden" name="qty" value="1" />
-              <button type="submit" class="btn-add-cart">Add to Cart</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Product Card 2 -->
-        <div class="product-card">
-          <a href="/products/2" class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
-              alt="Product"
-            />
-          </a>
-          <div class="product-info">
-            <span class="product-category">Fashion</span>
-            <a href="/products/2" class="product-title">Classic Watch</a>
-            <div class="product-price">₹3,999</div>
-            <form action="/cart/add/2" method="post">
-              <input type="hidden" name="qty" value="1" />
-              <button type="submit" class="btn-add-cart">Add to Cart</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Product Card 3 -->
-        <div class="product-card">
-          <a href="/products/3" class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400"
-              alt="Product"
-            />
-          </a>
-          <div class="product-info">
-            <span class="product-category">Fashion</span>
-            <a href="/products/3" class="product-title">Sunglasses</a>
-            <div class="product-price">₹1,299</div>
-            <form action="/cart/add/3" method="post">
-              <input type="hidden" name="qty" value="1" />
-              <button type="submit" class="btn-add-cart">Add to Cart</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Product Card 4 -->
-        <div class="product-card">
-          <a href="/products/4" class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400"
-              alt="Product"
-            />
-          </a>
-          <div class="product-info">
-            <span class="product-category">Fashion</span>
-            <a href="/products/4" class="product-title">Sneakers</a>
-            <div class="product-price">₹4,999</div>
-            <form action="/cart/add/4" method="post">
-              <input type="hidden" name="qty" value="1" />
-              <button type="submit" class="btn-add-cart">Add to Cart</button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Empty State (shown when no products) -->
-      <!-- 
-        <div class="empty-state">
+        <% if (typeof products !== 'undefined' && products.length > 0) { %>
+          <% products.forEach(product => { %>
+            <div class="product-card">
+              <a href="/products/<%= product.id %>" class="product-image">
+                <img
+                  src="<%= product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400' %>"
+                  alt="<%= product.name %>"
+                />
+              </a>
+              <div class="product-info">
+                <span class="product-category"><%= product.category %></span>
+                <a href="/products/<%= product.id %>" class="product-title">
+                  <%= product.name %>
+                </a>
+                <div class="product-price">₹<%= product.price.toLocaleString('en-IN') %></div>
+                <form action="/cart/add/<%= product.id %>" method="post">
+                  <input type="hidden" name="qty" value="1" />
+                  <button type="submit" class="btn-add-cart">Add to Cart</button>
+                </form>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <!-- Empty State -->
+          <div class="empty-state" style="grid-column: 1 / -1;">
             <div class="empty-state-icon">📦</div>
             <h3>No products found</h3>
-            <p>Try adjusting your search filters</p>
-        </div>
-        -->
+            <p>Try adjusting your search filters or browse all products</p>
+          </div>
+        <% } %>
+      </div>
     </div>
+
+    <%- include('../partials/footer') %>
   </body>
 </html>
