@@ -72,9 +72,22 @@ app.use((req, res, next) => {
   res.status(404).render("error", { message: "Page not found" });
 });
 
-app.use((err, req, res, next) => {
+app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.status(500).render("error", { message: "Something went wrong!" });
+
+  // try to render error view, but fall back to JSON if rendering fails
+  res.status(err.status || 500);
+  try {
+    return res.render("error", { error: err });
+  } catch (renderErr) {
+    // rendering failed (missing view, etc.) — send JSON fallback
+    return res.json({
+      success: false,
+      status: err.status || 500,
+      message: err.message || "Internal Server Error",
+      stack: req.app.get("env") === "development" ? err.stack : undefined,
+    });
+  }
 });
 
 // server

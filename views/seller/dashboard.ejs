@@ -11,11 +11,7 @@
     />
   </head>
   <body>
-    <%- include('../partials/seller-header') %>
-
     <div class="dashboard-container">
-      <%- include('../partials/seller-sidebar') %>
-
       <main class="dashboard-main">
         <div class="dashboard-header">
           <h1>Dashboard Overview</h1>
@@ -164,7 +160,7 @@
               recentProducts.forEach(product => { %>
               <div class="product-item">
                 <img
-                  src="<%= product.images[0] || '/images/placeholder.jpg' %>"
+                  src="<%= (product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.jpeg') %>"
                   alt="<%= product.name %>"
                 />
                 <div class="product-info">

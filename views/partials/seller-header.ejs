@@ -1,0 +1,50 @@
+<header class="seller-header">
+  <div class="header-left">
+    <h2>MartApp Seller</h2>
+  </div>
+
+  <div class="header-right">
+    <div class="search-box">
+      <form action="/seller/search" method="GET">
+        <input type="text" name="q" placeholder="Search products..." />
+        <button type="submit"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+
+    <div class="header-icons">
+      <a href="/seller/notifications" class="icon">
+        <i class="fas fa-bell"></i>
+      </a>
+      <a href="/seller/settings" class="icon">
+        <i class="fas fa-cog"></i>
+      </a>
+      <div class="profile-dropdown">
+        <button class="profile-btn">
+          <i class="fas fa-user-circle"></i>
+          <span>My Account</span>
+          <i class="fas fa-chevron-down small"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="/seller/profile">Profile</a>
+          <a href="/seller/settings">Settings</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Toggle profile dropdown
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.querySelector(".profile-btn");
+    const menu = document.querySelector(".dropdown-menu");
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      menu.classList.toggle("show");
+    });
+    document.body.addEventListener("click", () =>
+      menu.classList.remove("show")
+    );
+  });
+</script>

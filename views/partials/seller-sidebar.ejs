@@ -1,0 +1,57 @@
+<aside class="seller-sidebar">
+  <nav class="sidebar-nav">
+    <ul>
+      <li>
+        <a
+          href="/seller/dashboard"
+          class="<%= activePage === 'dashboard' ? 'active' : '' %>"
+        >
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+      </li>
+      <li>
+        <a
+          href="/seller/products"
+          class="<%= activePage === 'products' ? 'active' : '' %>"
+        >
+          <i class="fas fa-box"></i> Products
+        </a>
+      </li>
+      <li>
+        <a
+          href="/seller/orders"
+          class="<%= activePage === 'orders' ? 'active' : '' %>"
+        >
+          <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+      </li>
+      <li>
+        <a
+          href="/seller/inventory"
+          class="<%= activePage === 'inventory' ? 'active' : '' %>"
+        >
+          <i class="fas fa-warehouse"></i> Inventory
+        </a>
+      </li>
+      <li>
+        <a
+          href="/seller/reports"
+          class="<%= activePage === 'reports' ? 'active' : '' %>"
+        >
+          <i class="fas fa-chart-line"></i> Reports
+        </a>
+      </li>
+      <li>
+        <a
+          href="/seller/settings"
+          class="<%= activePage === 'settings' ? 'active' : '' %>"
+        >
+          <i class="fas fa-cog"></i> Settings
+        </a>
+      </li>
+      <li>
+        <a href="/logout"> <i class="fas fa-sign-out-alt"></i> Logout </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
