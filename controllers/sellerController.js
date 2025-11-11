@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const fileHelper = require("../utils/fileHelper");
 
 // Get seller ID helper
 const getSellerId = (req) => {
@@ -13,7 +14,6 @@ const getSellerId = (req) => {
 exports.getDashboard = async (req, res) => {
   try {
     const sellerId = getSellerId(req);
-
     // Get statistics
     const totalProducts = await Product.countDocuments({ seller: sellerId });
     const activeProducts = await Product.countDocuments({
@@ -23,6 +23,7 @@ exports.getDashboard = async (req, res) => {
 
     // Get orders for this seller's products
     const orders = await Order.find({ "items.seller": sellerId })
+      .populate("user", "name email")
       .populate("items.product")
       .sort({ createdAt: -1 })
       .limit(10);
@@ -47,12 +48,21 @@ exports.getDashboard = async (req, res) => {
     const lowStockProducts = await Product.find({
       seller: sellerId,
       stock: { $lt: 10 },
-    }).limit(5);
+    })
+      .sort({ stock: 1 })
+      .limit(5)
+      .lean();
 
     // Get recent products
+    console.log("Seller ID:", sellerId);
+
     const recentProducts = await Product.find({ seller: sellerId })
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(5)
+      .lean();
+
+    const products = await Product.find({ seller: sellerId });
+    console.log("Products found:", products.length);
 
     res.render("seller/dashboard", {
       title: "Seller Dashboard",
@@ -66,6 +76,7 @@ exports.getDashboard = async (req, res) => {
       recentOrders: orders,
       lowStockProducts,
       recentProducts,
+      products,
     });
   } catch (error) {
     console.error(error);
@@ -84,16 +95,20 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find({ seller: sellerId })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     const totalProducts = await Product.countDocuments({ seller: sellerId });
     const totalPages = Math.ceil(totalProducts / limit);
+
+    console.log("Products found:", products.length);
 
     res.render("seller/products", {
       title: "My Products",
       products,
       currentPage: page,
       totalPages,
+      totalProducts,
     });
   } catch (error) {
     console.error(error);
@@ -109,25 +124,31 @@ exports.getAddProduct = (req, res) => {
 // Post new product
 exports.postAddProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock, images } = req.body;
-    const sellerId = getSellerId(req);
+    const { name, description, price, category, stock } = req.body;
 
-    const product = new Product({
+    // Convert uploaded images to Base64
+    const images = req.files
+      ? req.files.map(
+          (file) =>
+            `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
+        )
+      : [];
+
+    const newProduct = new Product({
       name,
       description,
       price,
       category,
       stock,
-      images: images ? images.split(",").map((img) => img.trim()) : [],
-      seller: sellerId,
-      status: "active",
+      images,
+      seller: req.user._id,
     });
 
-    await product.save();
+    await newProduct.save();
     res.redirect("/seller/products");
-  } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Failed to add product" });
+  } catch (err) {
+    console.error(err);
+    res.render("error", { message: "Failed to add product" });
   }
 };
 
@@ -188,10 +209,21 @@ exports.postEditProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const sellerId = getSellerId(req);
+    const product = await Product.findOne({
+      _id: req.params.id,
+      seller: sellerId,
+    });
+
+    if (product && product.images.length > 0) {
+      // Delete associated images
+      fileHelper.deleteFiles(product.images);
+    }
+
     await Product.findOneAndDelete({
       _id: req.params.id,
       seller: sellerId,
     });
+
     res.redirect("/seller/products");
   } catch (error) {
     console.error(error);

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../config/multer");
 const sellerController = require("../controllers/sellerController");
 const { ensureAuth, ensureRole } = require("../middleware/auth");
 
@@ -13,13 +14,16 @@ router.get("/dashboard", sellerController.getDashboard);
 // Product Management
 router.get("/products", sellerController.getProducts);
 router.get("/products/add", sellerController.getAddProduct);
-router.post("/products/add", sellerController.postAddProduct);
 router.get("/products/edit/:id", sellerController.getEditProduct);
 router.post("/products/edit/:id", sellerController.postEditProduct);
 router.post("/products/delete/:id", sellerController.deleteProduct);
+router.post("/products/toggle/:id", sellerController.toggleProductStatus);
+
+// Add product route with image upload
 router.post(
-  "/products/toggle-status/:id",
-  sellerController.toggleProductStatus
+  "/products/add",
+  upload.array("images", 5),
+  sellerController.postAddProduct
 );
 
 // Order Management
@@ -27,14 +31,9 @@ router.get("/orders", sellerController.getOrders);
 router.get("/orders/:id", sellerController.getOrderDetails);
 router.post("/orders/:id/update-status", sellerController.updateOrderStatus);
 
-// Analytics
 router.get("/analytics", sellerController.getAnalytics);
-
-// Inventory
 router.get("/inventory", sellerController.getInventory);
-router.post("/inventory/update/:id", sellerController.updateInventory);
-
-// Profile & Settings
+router.post("/inventory/:id", sellerController.updateInventory);
 router.get("/profile", sellerController.getProfile);
 router.post("/profile", sellerController.updateProfile);
 

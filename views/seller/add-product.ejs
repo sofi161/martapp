@@ -1,167 +1,754 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %> - MartApp</title>
-    <link rel="stylesheet" href="/css/seller.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    
-    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .dashboard-container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .dashboard-main {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+      }
+
+      .dashboard-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .dashboard-header h1 {
+        font-size: 2.2rem;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .dashboard-header h1 i {
+        color: #667eea;
+        font-size: 2rem;
+      }
+
+      .dashboard-header p {
+        color: #666;
+        font-size: 1rem;
+        margin-left: 2.8rem;
+      }
+
+      .form-container {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .product-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.8rem;
+      }
+
+      .form-section {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+      }
+
+      .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .form-section-title i {
+        color: #667eea;
+        font-size: 1rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.6rem;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .form-group label i {
+        color: #667eea;
+        font-size: 0.85rem;
+      }
+
+      .required-star {
+        color: #dc3545;
+        margin-left: 0.2rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: white;
+        font-family: inherit;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-control:hover {
+        border-color: #b0b0b0;
+      }
+
+      textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.6;
+      }
+
+      select.form-control {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+      }
+
+      .form-hint {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+        color: #666;
+        font-size: 0.85rem;
+      }
+
+      .form-hint i {
+        color: #667eea;
+        font-size: 0.75rem;
+      }
+
+      .input-icon-wrapper {
+        position: relative;
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        pointer-events: none;
+      }
+
+      .input-icon-wrapper .form-control {
+        padding-left: 2.8rem;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        padding-top: 1.5rem;
+        border-top: 2px solid #f0f0f0;
+        margin-top: 1rem;
+      }
+
+      .btn {
+        padding: 0.9rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        min-width: 140px;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #666;
+        border: 2px solid #e0e0e0;
+      }
+
+      .btn-secondary:hover {
+        background: #f8f9fa;
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      /* Image Upload Section */
+      .image-upload-area {
+        border: 2px dashed #667eea;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .image-upload-area:hover {
+        border-color: #764ba2;
+        background: rgba(102, 126, 234, 0.05);
+      }
+
+      .image-upload-area.dragover {
+        border-color: #764ba2;
+        background: rgba(102, 126, 234, 0.1);
+        transform: scale(1.02);
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+      }
+
+      .upload-text {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .upload-subtext {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      #images {
+        display: none;
+      }
+
+      .image-preview-container {
+        margin-top: 1.5rem;
+        display: none;
+      }
+
+      .image-preview-container.active {
+        display: block;
+      }
+
+      .image-preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1rem;
+      }
+
+      .image-preview-item {
+        position: relative;
+        padding-top: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8f9fa;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-preview-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-preview-item .remove-image {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .image-preview-item .remove-image:hover {
+        background: #dc3545;
+        transform: scale(1.1);
+      }
+
+      .primary-badge {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 0.5rem;
+        background: rgba(102, 126, 234, 0.9);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .dashboard-main {
+          padding: 1.5rem;
+        }
+
+        .form-container {
+          padding: 1.5rem;
+        }
+
+        .dashboard-header h1 {
+          font-size: 1.8rem;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+          flex-direction: column-reverse;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .form-section {
+          padding: 1rem;
+        }
+      }
+
+      /* Animation */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .form-section {
+        animation: fadeInUp 0.5s ease forwards;
+      }
+
+      .form-section:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+
+      .form-section:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .form-section:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+    </style>
+  </head>
+  <body>
     <div class="dashboard-container">
-        
-        
-        <main class="dashboard-main">
-            <div class="dashboard-header">
-                <h1><%= title %></h1>
-                <p>Fill in the details below to add a new product to your store.</p>
+      <main class="dashboard-main">
+        <div class="dashboard-header">
+          <h1>
+            <i class="fas fa-plus-circle"></i>
+            <%= title %>
+          </h1>
+          <p>Fill in the details below to add a new product to your store.</p>
+        </div>
+
+        <div class="form-container">
+          <form
+            action="/seller/products/add"
+            method="POST"
+            enctype="multipart/form-data"
+            class="product-form"
+          >
+            <!-- Basic Information -->
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <i class="fas fa-info-circle"></i>
+                Basic Information
+              </h3>
+              <div class="form-row">
+                <div class="form-group full-width">
+                  <label for="name">
+                    <i class="fas fa-tag"></i>
+                    Product Name
+                    <span class="required-star">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="form-control"
+                    required
+                    placeholder="e.g., Wireless Bluetooth Headphones"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group full-width">
+                  <label for="description">
+                    <i class="fas fa-align-left"></i>
+                    Description
+                    <span class="required-star">*</span>
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    class="form-control"
+                    required
+                    placeholder="Describe your product features, specifications, and benefits..."
+                  ></textarea>
+                  <small class="form-hint">
+                    <i class="fas fa-lightbulb"></i>
+                    Provide detailed information to help customers make informed
+                    decisions
+                  </small>
+                </div>
+              </div>
             </div>
 
-            <div class="form-container">
-                <form action="/seller/products/add" method="POST" class="product-form">
-                    <div class="form-row">
-                        <div class="form-group full-width">
-                            <label for="name">Product Name *</label>
-                            <input 
-                                type="text" 
-                                id="name" 
-                                name="name" 
-                                class="form-control" 
-                                required
-                                placeholder="Enter product name"
-                            >
-                        </div>
-                    </div>
+            <!-- Pricing & Inventory -->
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <i class="fas fa-dollar-sign"></i>
+                Pricing & Inventory
+              </h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="price">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Price (USD)
+                    <span class="required-star">*</span>
+                  </label>
+                  <div class="input-icon-wrapper">
+                    <i class="fas fa-dollar-sign input-icon"></i>
+                    <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      class="form-control"
+                      step="0.01"
+                      min="0"
+                      required
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="price">Price ($) *</label>
-                            <input 
-                                type="number" 
-                                id="price" 
-                                name="price" 
-                                class="form-control" 
-                                step="0.01"
-                                min="0"
-                                required
-                                placeholder="0.00"
-                            >
-                        </div>
+                <div class="form-group">
+                  <label for="category">
+                    <i class="fas fa-list"></i>
+                    Category
+                    <span class="required-star">*</span>
+                  </label>
+                  <select
+                    id="category"
+                    name="category"
+                    class="form-control"
+                    required
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Electronics">📱 Electronics</option>
+                    <option value="Clothing">👕 Clothing</option>
+                    <option value="Home & Garden">🏡 Home & Garden</option>
+                    <option value="Sports">⚽ Sports</option>
+                    <option value="Books">📚 Books</option>
+                    <option value="Toys">🧸 Toys</option>
+                    <option value="Food">🍔 Food</option>
+                    <option value="Beauty">💄 Beauty</option>
+                    <option value="Other">📦 Other</option>
+                  </select>
+                </div>
 
-                        <div class="form-group">
-                            <label for="category">Category *</label>
-                            <select id="category" name="category" class="form-control" required>
-                                <option value="">Select a category</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Clothing">Clothing</option>
-                                <option value="Home & Garden">Home & Garden</option>
-                                <option value="Sports">Sports</option>
-                                <option value="Books">Books</option>
-                                <option value="Toys">Toys</option>
-                                <option value="Food">Food</option>
-                                <option value="Beauty">Beauty</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="stock">Stock Quantity *</label>
-                            <input 
-                                type="number" 
-                                id="stock" 
-                                name="stock" 
-                                class="form-control" 
-                                min="0"
-                                required
-                                placeholder="0"
-                            >
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group full-width">
-                            <label for="description">Description *</label>
-                            <textarea 
-                                id="description" 
-                                name="description" 
-                                class="form-control" 
-                                required
-                                placeholder="Describe your product in detail..."
-                            ></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group full-width">
-                            <label for="images">Product Images (URLs)</label>
-                            <input 
-                                type="text" 
-                                id="images" 
-                                name="images" 
-                                class="form-control" 
-                                placeholder="Enter image URLs separated by commas"
-                            >
-                            <small class="form-hint">Enter multiple image URLs separated by commas</small>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <a href="/seller/products" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Product
-                        </button>
-                    </div>
-                </form>
+                <div class="form-group">
+                  <label for="stock">
+                    <i class="fas fa-boxes"></i>
+                    Stock Quantity
+                    <span class="required-star">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="stock"
+                    name="stock"
+                    class="form-control"
+                    min="0"
+                    required
+                    placeholder="0"
+                  />
+                  <small class="form-hint">
+                    <i class="fas fa-info-circle"></i>
+                    Available units in stock
+                  </small>
+                </div>
+              </div>
             </div>
-        </main>
+
+            <!-- Product Images -->
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <i class="fas fa-images"></i>
+                Product Images
+              </h3>
+              <div class="form-row">
+                <div class="form-group full-width">
+                  <label for="images">
+                    <i class="fas fa-camera"></i>
+                    Upload Images
+                  </label>
+                  <div class="image-upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p class="upload-text">Click to upload or drag and drop</p>
+                    <p class="upload-subtext">
+                      PNG, JPG, JPEG up to 5MB each (Max 5 images)
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    id="images"
+                    name="images"
+                    accept="image/*"
+                    multiple
+                  />
+                  <div
+                    class="image-preview-container"
+                    id="imagePreviewContainer"
+                  >
+                    <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                  </div>
+                  <small class="form-hint">
+                    <i class="fas fa-info-circle"></i>
+                    First image will be the primary display image
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <a href="/seller/dashboard" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Cancel
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check"></i>
+                Add Product
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
-</body>
-</html>
 
-<style>
-.form-container {
-    background: white;
-    border-radius: 12px;
-    padding: 32px;
-    border: 1px solid var(--border);
-    max-width: 900px;
-}
+    <script>
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("images");
+      const previewContainer = document.getElementById("imagePreviewContainer");
+      const previewGrid = document.getElementById("imagePreviewGrid");
+      let selectedFiles = [];
 
-.product-form {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
+      // Click to upload
+      uploadArea.addEventListener("click", () => {
+        fileInput.click();
+      });
 
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
+      // Drag and drop
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
 
-.form-group.full-width {
-    grid-column: 1 / -1;
-}
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
 
-.form-hint {
-    display: block;
-    margin-top: 6px;
-    color: var(--text-light);
-    font-size: 14px;
-}
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const files = Array.from(e.dataTransfer.files).filter((file) =>
+          file.type.startsWith("image/")
+        );
+        handleFiles(files);
+      });
 
-.form-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-}
+      // File input change
+      fileInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+      });
 
-.form-actions .btn {
-    min-width: 140px;
-}
-</style>
+      function handleFiles(files) {
+        // Limit to 5 images
+        const totalFiles = selectedFiles.length + files.length;
+        if (totalFiles > 5) {
+          alert("Maximum 5 images allowed");
+          return;
+        }
+
+        // Validate file size (5MB)
+        const validFiles = files.filter((file) => {
+          if (file.size > 5 * 1024 * 1024) {
+            alert(`${file.name} exceeds 5MB limit`);
+            return false;
+          }
+          return true;
+        });
+
+        selectedFiles = [...selectedFiles, ...validFiles];
+        updatePreview();
+        updateFileInput();
+      }
+
+      function updateFileInput() {
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach((file) => {
+          dataTransfer.items.add(file);
+        });
+        fileInput.files = dataTransfer.files;
+      }
+
+      function updatePreview() {
+        previewGrid.innerHTML = "";
+
+        if (selectedFiles.length > 0) {
+          previewContainer.classList.add("active");
+
+          selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+              const div = document.createElement("div");
+              div.className = "image-preview-item";
+              div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${
+                index + 1
+              }">
+                            ${
+                              index === 0
+                                ? '<span class="primary-badge">Primary</span>'
+                                : ""
+                            }
+                            <button type="button" class="remove-image" onclick="removeImage(${index})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+              previewGrid.appendChild(div);
+            };
+
+            reader.readAsDataURL(file);
+          });
+        } else {
+          previewContainer.classList.remove("active");
+        }
+      }
+
+      function removeImage(index) {
+        selectedFiles.splice(index, 1);
+        updatePreview();
+        updateFileInput();
+      }
+
+      // Form validation
+      document
+        .querySelector(".product-form")
+        .addEventListener("submit", (e) => {
+          const price = document.getElementById("price").value;
+          const stock = document.getElementById("stock").value;
+
+          if (parseFloat(price) < 0) {
+            e.preventDefault();
+            alert("Price cannot be negative");
+            return;
+          }
+
+          if (parseInt(stock) < 0) {
+            e.preventDefault();
+            alert("Stock cannot be negative");
+            return;
+          }
+        });
+    </script>
+  </body>
 </html>

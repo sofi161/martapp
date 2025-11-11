@@ -22,8 +22,8 @@ const productSchema = new mongoose.Schema({
     enum: ["electronics", "fashion", "home", "sports", "books"],
     lowercase: true,
   },
-  image: {
-    type: String,
+  images: {
+    type: [String],
     default:
       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
   },
@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema({
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
   createdAt: {
     type: Date,

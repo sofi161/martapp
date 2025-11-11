@@ -4,18 +4,495 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %> - MartApp</title>
-    <link rel="stylesheet" href="/css/seller.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .dashboard-main {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+      }
+
+      .dashboard-header {
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .dashboard-header-content h1 {
+        font-size: 2.5rem;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .dashboard-header-content p {
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .btn-add-product {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.9rem 1.8rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        white-space: nowrap;
+      }
+
+      .btn-add-product:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-add-product i {
+        font-size: 1.1rem;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 16px;
+        padding: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.5) 0%,
+          transparent 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-card:hover::before {
+        opacity: 1;
+      }
+
+      .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .stat-icon.products {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .stat-icon.revenue {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+      }
+
+      .stat-icon.orders {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+      }
+
+      .stat-icon.stock {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        box-shadow: 0 8px 20px rgba(67, 233, 123, 0.4);
+      }
+
+      .stat-info {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+      }
+
+      .stat-info h3 {
+        font-size: 2rem;
+        color: #1a1a1a;
+        margin-bottom: 0.3rem;
+        font-weight: 700;
+      }
+
+      .stat-info p {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .stat-detail {
+        color: #999;
+        font-size: 0.85rem;
+      }
+
+      /* Dashboard Section */
+      .dashboard-section {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .section-header h2 {
+        font-size: 1.5rem;
+        color: #1a1a1a;
+        font-weight: 600;
+      }
+
+      .btn-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-link:hover {
+        background: rgba(102, 126, 234, 0.1);
+      }
+
+      /* Table */
+      .table-container {
+        overflow-x: auto;
+      }
+
+      .orders-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+
+      .orders-table thead th {
+        background: #f8f9fa;
+        color: #666;
+        font-weight: 600;
+        text-align: left;
+        padding: 1rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .orders-table tbody td {
+        padding: 1.2rem 1rem;
+        color: #333;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .orders-table tbody tr {
+        transition: background 0.2s ease;
+      }
+
+      .orders-table tbody tr:hover {
+        background: #f8f9fa;
+      }
+
+      .orders-table a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .orders-table a:hover {
+        text-decoration: underline;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      .status-badge.pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-badge.processing {
+        background: #cfe2ff;
+        color: #084298;
+      }
+
+      .status-badge.shipped {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+
+      .status-badge.delivered {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+
+      .status-badge.active {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+
+      .status-badge.inactive {
+        background: #f8d7da;
+        color: #842029;
+      }
+
+      .no-data {
+        text-align: center;
+        color: #999;
+        padding: 2rem;
+        font-style: italic;
+      }
+
+      .no-data a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .no-data a:hover {
+        text-decoration: underline;
+      }
+
+      /* Dashboard Grid */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 2rem;
+      }
+
+      /* Product List */
+      .product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .product-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .product-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+      }
+
+      .product-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+
+      .product-info {
+        flex: 1;
+      }
+
+      .product-info h4 {
+        color: #1a1a1a;
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+      }
+
+      .product-info p {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .stock-warning {
+        color: #dc3545 !important;
+        font-weight: 500;
+      }
+
+      .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-icon:hover {
+        background: #667eea;
+        color: white;
+        transform: scale(1.1);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .dashboard-main {
+          padding: 1.5rem;
+        }
+
+        .dashboard-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .dashboard-header-content h1 {
+          font-size: 1.8rem;
+        }
+
+        .btn-add-product {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stat-card {
+          padding: 1.2rem;
+        }
+
+        .stat-icon {
+          width: 60px;
+          height: 60px;
+          font-size: 1.5rem;
+        }
+
+        .table-container {
+          overflow-x: auto;
+        }
+
+        .orders-table {
+          min-width: 600px;
+        }
+      }
+
+      /* Animation */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stat-card {
+        animation: fadeInUp 0.5s ease forwards;
+      }
+
+      .stat-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .stat-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .stat-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .stat-card:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+    </style>
   </head>
   <body>
     <div class="dashboard-container">
       <main class="dashboard-main">
         <div class="dashboard-header">
           <h1>Dashboard Overview</h1>
-          <p>Welcome back! Here's what's happening with your store today.</p>
+          <a href="/seller/products/add" class="btn-link">Add Product</a>
         </div>
 
         <!-- Stats Cards -->
@@ -116,68 +593,29 @@
           </div>
         </div>
 
-        <!-- Two Column Layout -->
-        <div class="dashboard-grid">
-          <!-- Low Stock Products -->
-          <div class="dashboard-section">
-            <div class="section-header">
-              <h2>Low Stock Alert</h2>
-              <a href="/seller/inventory" class="btn-link">Manage</a>
-            </div>
-            <div class="product-list">
-              <% if (lowStockProducts.length > 0) { %> <%
-              lowStockProducts.forEach(product => { %>
-              <div class="product-item">
-                <img
-                  src="<%= product.images[0] || '/images/placeholder.jpg' %>"
-                  alt="<%= product.name %>"
-                />
-                <div class="product-info">
-                  <h4><%= product.name %></h4>
-                  <p class="stock-warning">Only <%= product.stock %> left</p>
-                </div>
-                <a
-                  href="/seller/products/edit/<%= product._id %>"
-                  class="btn-icon"
-                >
-                  <i class="fas fa-edit"></i>
-                </a>
-              </div>
-              <% }) %> <% } else { %>
-              <p class="no-data">All products are well stocked!</p>
-              <% } %>
-            </div>
+        <!-- Recent Products -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h2>Recent Products</h2>
+            <a href="/seller/products" class="btn-link">View All</a>
           </div>
-
-          <!-- Recent Products -->
-          <div class="dashboard-section">
-            <div class="section-header">
-              <h2>Recent Products</h2>
-              <a href="/seller/products" class="btn-link">View All</a>
-            </div>
-            <div class="product-list">
-              <% if (recentProducts.length > 0) { %> <%
-              recentProducts.forEach(product => { %>
-              <div class="product-item">
-                <img
-                  src="<%= (product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.jpeg') %>"
-                  alt="<%= product.name %>"
-                />
-                <div class="product-info">
-                  <h4><%= product.name %></h4>
-                  <p>$<%= product.price.toFixed(2) %></p>
-                </div>
-                <span class="status-badge <%= product.status %>"
-                  ><%= product.status %></span
-                >
-              </div>
-              <% }) %> <% } else { %>
-              <p class="no-data">
-                No products yet.
-                <a href="/seller/products/add">Add your first product</a>
-              </p>
+          <div class="product-list">
+            <% if (recentProducts && recentProducts.length > 0) { %> <%
+            recentProducts.forEach(product => { %>
+            <div class="product-item">
+              <% if (product.images && product.images.length > 0) { %>
+              <img src="<%= product.images[0] %>" alt="<%= product.name %>" />
+              <% } else { %>
+              <img src="/images/placeholder.jpg" alt="No image available" />
               <% } %>
+              <div class="product-info">
+                <h4><%= product.name %></h4>
+                <p><%= product.category %></p>
+              </div>
             </div>
+            <% }); %> <% } else { %>
+            <p>No recent products found.</p>
+            <% } %>
           </div>
         </div>
       </main>
