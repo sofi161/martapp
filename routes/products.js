@@ -10,11 +10,27 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
+console.log("📦 Products route file loaded");
+// routes/products.js - DEBUG VERSION
 
-// public: product grid
+// public: product grid - WITH DEBUGGING
 router.get("/", async (req, res) => {
+  console.log("🔥🔥🔥 PRODUCTS ROUTE HIT! 🔥🔥🔥");
   try {
     const { q, category, min, max } = req.query;
+
+    // FIRST: Check if ANY products exist at all
+    const totalProducts = await Product.countDocuments({});
+    console.log("=== PRODUCTS DEBUG ===");
+    console.log("Total products in database:", totalProducts);
+
+    // Check products with isAvailable = true
+    const availableProducts = await Product.countDocuments({
+      isAvailable: true,
+    });
+    console.log("Products with isAvailable=true:", availableProducts);
+
+    // Build filter
     let filter = { isAvailable: true };
     if (q) filter.title = new RegExp(q, "i");
     if (category) filter.category = category;
@@ -22,10 +38,46 @@ router.get("/", async (req, res) => {
     if (min) filter.price.$gte = Number(min);
     if (max) filter.price.$lte = Number(max);
 
+    console.log("Applied filter:", JSON.stringify(filter));
+
+    // Get products with filter
     const products = await Product.find(filter).populate("seller");
-    res.render("products/index", { products });
+    console.log("Products found with filter:", products.length);
+
+    // Log first product details if exists
+    if (products.length > 0) {
+      console.log("Sample product:", {
+        id: products[0]._id,
+        title: products[0].title,
+        price: products[0].price,
+        category: products[0].category,
+        isAvailable: products[0].isAvailable,
+        images: products[0].images,
+      });
+    }
+
+    // Also fetch ALL products (without filter) to see what's there
+    const allProducts = await Product.find({}).populate("seller");
+    console.log("ALL products (no filter):", allProducts.length);
+    if (allProducts.length > 0 && allProducts.length !== products.length) {
+      console.log("Sample of filtered-out product:", {
+        id: allProducts[0]._id,
+        title: allProducts[0].title,
+        isAvailable: allProducts[0].isAvailable,
+        category: allProducts[0].category,
+      });
+    }
+    console.log("===================");
+
+    res.render("products/index", {
+      products,
+      query: q || "",
+      category: category || "",
+      minPrice: min || "",
+      maxPrice: max || "",
+    });
   } catch (err) {
-    console.error(err);
+    console.error("ERROR in /products route:", err);
     res.redirect("/");
   }
 });
@@ -47,7 +99,7 @@ router.get("/new", ensureAuth, ensureRole("seller"), (req, res) => {
   res.render("products/new");
 });
 
-// create product
+// create product - ENSURE isAvailable is set
 router.post(
   "/",
   ensureAuth,
@@ -67,11 +119,18 @@ router.post(
         category,
         images,
         seller: req.session.user.id,
+        isAvailable: true, // EXPLICITLY SET TO TRUE
       });
       await product.save();
+      console.log(
+        "Product created:",
+        product._id,
+        "isAvailable:",
+        product.isAvailable
+      );
       res.redirect("/products");
     } catch (err) {
-      console.error(err);
+      console.error("Error creating product:", err);
       res.redirect("/products/new");
     }
   }

@@ -1,42 +1,172 @@
 <%- include('../partials/header') %>
+<style>
+  .cart-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+  }
 
-<h2>Your Cart</h2>
+  .cart-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
 
-<% if(!cart || cart.totalQty === 0){ %>
-<p>Your cart is empty. <a href="/products">Shop now</a></p>
-<% } else { %>
-<table class="cart-table">
-  <thead>
-    <tr>
-      <th>Product</th>
-      <th>Qty</th>
-      <th>Price</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% Object.keys(cart.items).forEach(key => { const it = cart.items[key]; %>
-    <tr>
-      <td><%= it.item.title %></td>
-      <td>
-        <form action="/cart/update/<%= key %>" method="post">
-          <input type="number" name="qty" value="<%= it.qty %>" min="1" />
-          <button type="submit">Update</button>
-        </form>
-      </td>
-      <td>₹<%= it.price %></td>
-      <td>
-        <form action="/cart/remove/<%= key %>" method="post">
-          <button type="submit">Remove</button>
-        </form>
-      </td>
-    </tr>
-    <% }) %>
-  </tbody>
-</table>
+  .empty-cart {
+    text-align: center;
+    padding: 40px;
+    background: #f8f8f8;
+    border-radius: 12px;
+  }
 
-<p><strong>Total:</strong> ₹<%= cart.totalPrice %></p>
-<form action="/orders/checkout" method="post">
-  <button type="submit">Checkout</button>
-</form>
-<% } %> <%- include('../partials/footer') %>
+  .shop-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 18px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+
+  .cart-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+  }
+
+  .cart-table th {
+    text-align: left;
+    padding: 12px;
+    background: #f0f0f0;
+    border-radius: 6px;
+  }
+
+  .cart-row {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+  }
+
+  .cart-row td {
+    padding: 14px;
+  }
+
+  .qty-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .qty-input {
+    width: 60px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  .update-btn {
+    padding: 6px 12px;
+    background: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .remove-btn {
+    padding: 6px 12px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .checkout-btn {
+    width: 100%;
+    padding: 14px;
+    background: #28a745;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .cart-summary {
+    margin-top: 30px;
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .total-price {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+</style>
+<div class="cart-container">
+  <h2 class="cart-title">🛒 Your Cart</h2>
+
+  <% if (!cart || cart.totalQty === 0) { %>
+
+  <div class="empty-cart">
+    <p>Your cart is empty.</p>
+    <a class="shop-btn" href="/products">Shop Now</a>
+  </div>
+
+  <% } else { %>
+
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% Object.keys(cart.items).forEach(key => { const it = cart.items[key]; %>
+      <tr class="cart-row">
+        <td class="product-name"><%= it.item.title %></td>
+
+        <td>
+          <form action="/cart/update/<%= key %>" method="post" class="qty-form">
+            <input
+              type="number"
+              name="qty"
+              value="<%= it.qty %>"
+              min="1"
+              class="qty-input"
+            />
+            <button type="submit" class="update-btn">Update</button>
+          </form>
+        </td>
+
+        <td class="product-price">₹<%= it.price %></td>
+
+        <td>
+          <form action="/cart/remove/<%= key %>" method="post">
+            <button type="submit" class="remove-btn">Remove</button>
+          </form>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <div class="cart-summary">
+    <p class="total-price"><strong>Total:</strong> ₹<%= cart.totalPrice %></p>
+
+    <form action="/orders/checkout" method="post">
+      <button type="submit" class="checkout-btn">Proceed to Checkout</button>
+    </form>
+  </div>
+
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

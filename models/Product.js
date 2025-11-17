@@ -7,6 +7,10 @@ const productSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  title: {
+    type: String,
+    trim: true,
+  },
   description: {
     type: String,
     required: true,
@@ -34,13 +38,18 @@ const productSchema = new mongoose.Schema({
   },
   images: {
     type: [String],
-    default:
+    default: [
       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+    ],
   },
   stock: {
     type: Number,
     default: 0,
     min: 0,
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true,
   },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
@@ -57,9 +66,18 @@ const productSchema = new mongoose.Schema({
   },
 });
 
+// Virtual to use title if exists, otherwise use name
+productSchema.virtual("displayTitle").get(function () {
+  return this.title || this.name;
+});
+
 // Update the updatedAt field before saving
 productSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
+  // Sync title with name if title is not set
+  if (!this.title && this.name) {
+    this.title = this.name;
+  }
   next();
 });
 

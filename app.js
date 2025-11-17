@@ -56,16 +56,21 @@ app.use((req, res, next) => {
 });
 
 // routes
-app.use("/", authRoutes);
+console.log("🚀 Registering /products routes");
 app.use("/products", productRoutes);
+console.log("🚀 Registering /cart routes");
 app.use("/cart", cartRoutes);
+console.log("🚀 Registering /orders routes");
 app.use("/orders", orderRoutes);
+console.log("🚀 Registering /seller routes");
 app.use("/seller", sellerRoutes);
 
 // home route
 app.get("/", (req, res) => {
-  res.render("index");
+  res.redirect("/products");
 });
+
+app.use("/", authRoutes);
 
 // Error handling middleware
 app.use((req, res, next) => {

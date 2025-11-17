@@ -1,19 +1,150 @@
 <%- include('../partials/header') %>
 
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+    color: #222;
+    font-size: 32px;
+  }
+
+  .orders-wrapper {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .no-orders {
+    text-align: center;
+    color: #666;
+    margin-top: 40px;
+    font-size: 20px;
+  }
+
+  .order-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+  }
+
+  .order-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .order-card p {
+    margin: 6px 0;
+    font-size: 17px;
+    color: #333;
+  }
+
+  .order-id {
+    color: #1a73e8;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .order-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+  }
+
+  .status-pending {
+    background: #ff9800;
+  }
+  .status-confirmed {
+    background: #2196f3;
+  }
+  .status-shipped {
+    background: #673ab7;
+  }
+  .status-delivered {
+    background: #4caf50;
+  }
+  .status-cancelled {
+    background: #f44336;
+  }
+
+  .items-list {
+    margin-top: 12px;
+    padding-left: 20px;
+  }
+
+  .items-list li {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  .orders-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin-top: 30px;
+  }
+
+  @media (min-width: 768px) {
+    .orders-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .orders-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .orders-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+</style>
+
 <h2>My Orders</h2>
 
-<% if(!orders || orders.length === 0){ %>
-<p>No orders yet.</p>
-<% } else { %> <% orders.forEach(o => { %>
-<div class="order-card">
-  <p>Order ID: <%= o._id %></p>
-  <p>Date: <%= new Date(o.createdAt).toLocaleString() %></p>
-  <p>Status: <%= o.status %></p>
-  <p>Total: ₹<%= o.totalAmount %></p>
-  <ul>
-    <% o.items.forEach(i => { %>
-    <li><%= i.qty %> x <%= i.product.title %> @ ₹<%= i.priceAtPurchase %></li>
-    <% }) %>
-  </ul>
+<div class="orders-wrapper">
+  <div class="orders-grid">
+    <% if (!orders || orders.length === 0) { %>
+    <p class="no-orders">You haven't placed any orders yet.</p>
+    <% } else { %> <% orders.forEach(o => { %>
+    <div class="order-card">
+      <p class="order-id">Order ID: <%= o._id %></p>
+      <p>
+        <strong>Date:</strong> <%= new Date(o.createdAt).toLocaleString() %>
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        <span class="order-status status-<%= o.status.toLowerCase() %>">
+          <%= o.status %>
+        </span>
+      </p>
+
+      <p><strong>Total:</strong> ₹<%= o.totalAmount %></p>
+
+      <ul class="items-list">
+        <% o.items.forEach(i => { %>
+        <li>
+          <%= i.qty %> × <%= i.product.title %> @ ₹<%= i.priceAtPurchase %>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% }) %> <% } %>
+  </div>
 </div>
-<% }) %> <% } %> <%- include('../partials/footer') %>
+
+<%- include('../partials/footer') %>
