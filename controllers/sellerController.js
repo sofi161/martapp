@@ -1,39 +1,78 @@
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const User = require("../models/User");
-const fileHelper = require("../utils/fileHelper");
+const mongoose = require("mongoose");
 
-// Get seller ID helper
+// Get seller ID helper - FIXED to handle both string and ObjectId
 const getSellerId = (req) => {
-  return (
-    req.user._id || req.user.id || req.session.user._id || req.session.user.id
-  );
+  const id =
+    req.user?._id ||
+    req.user?.id ||
+    req.session?.user?._id ||
+    req.session?.user?.id;
+
+  // Always return the ID as-is first, we'll convert in queries
+  return id ? id.toString() : null;
 };
 
-// Dashboard Overview
+// Dashboard Overview - FIXED
 exports.getDashboard = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+    console.log("Dashboard - Original Seller ID:", sellerId);
+    console.log("Dashboard - Original Type:", typeof sellerId);
+
+    // Convert to ObjectId if it's a string
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
+    console.log("Dashboard - Converted Seller ID:", sellerId);
+
+    // 🔍 DEBUG: Check what's in the database
+    const allProducts = await Product.find({});
+    console.log("=== ALL PRODUCTS IN DB ===");
+    console.log("Total products in entire DB:", allProducts.length);
+    if (allProducts.length > 0) {
+      console.log("First product seller field:", allProducts[0].seller);
+      console.log("First product seller type:", typeof allProducts[0].seller);
+      console.log(
+        "Full first product:",
+        JSON.stringify(allProducts[0], null, 2)
+      );
+    }
+
+    // Check if any product matches
+    const matchingProducts = await Product.find({
+      seller: sellerId,
+    });
+    console.log("Products matching seller:", matchingProducts.length);
+
+    // Try string comparison
+    const stringMatch = await Product.find({
+      seller: sellerId.toString(),
+    });
+    console.log("Products matching seller as string:", stringMatch.length);
+
     // Get statistics
-    const totalProducts = await Product.countDocuments({ seller: sellerId });
+    const totalProducts = await Product.countDocuments({
+      seller: sellerId.toString(),
+    });
+    console.log("Dashboard - Total products:", totalProducts);
+
     const activeProducts = await Product.countDocuments({
       seller: sellerId,
       status: "active",
     });
 
-    // Get orders for this seller's products
-    const orders = await Order.find({ "items.seller": sellerId })
-      .populate("user", "name email")
-      .populate("items.product")
-      .sort({ createdAt: -1 })
-      .limit(10);
-
-    // Calculate revenue
+    // Initialize revenue and order counters
     let totalRevenue = 0;
     let pendingOrders = 0;
     let completedOrders = 0;
 
+    // Get all orders for this seller's products
     const allOrders = await Order.find({ "items.seller": sellerId });
+
     allOrders.forEach((order) => {
       order.items.forEach((item) => {
         if (item.seller && item.seller.toString() === sellerId.toString()) {
@@ -43,6 +82,13 @@ exports.getDashboard = async (req, res) => {
         }
       });
     });
+
+    // Get recent orders for display
+    const orders = await Order.find({ "items.seller": sellerId })
+      .populate("user", "name email")
+      .populate("items.product")
+      .sort({ createdAt: -1 })
+      .limit(10);
 
     // Get low stock products
     const lowStockProducts = await Product.find({
@@ -54,15 +100,16 @@ exports.getDashboard = async (req, res) => {
       .lean();
 
     // Get recent products
-    console.log("Seller ID:", sellerId);
-
     const recentProducts = await Product.find({ seller: sellerId })
       .sort({ createdAt: -1 })
       .limit(5)
       .lean();
 
+    console.log("Dashboard - Recent products:", recentProducts.length);
+
+    // Get all products
     const products = await Product.find({ seller: sellerId });
-    console.log("Products found:", products.length);
+    console.log("Dashboard - All products:", products.length);
 
     res.render("seller/dashboard", {
       title: "Seller Dashboard",
@@ -79,15 +126,23 @@ exports.getDashboard = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Dashboard error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
-// Get all products
+// Get all products - FIXED
 exports.getProducts = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    // Convert to ObjectId if it's a string
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
@@ -101,7 +156,8 @@ exports.getProducts = async (req, res) => {
     const totalProducts = await Product.countDocuments({ seller: sellerId });
     const totalPages = Math.ceil(totalProducts / limit);
 
-    console.log("Products found:", products.length);
+    console.log("Products page - Products found:", products.length);
+    console.log("Products page - Total products:", totalProducts);
 
     res.render("seller/products", {
       title: "My Products",
@@ -111,8 +167,10 @@ exports.getProducts = async (req, res) => {
       totalProducts,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Products page error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
@@ -121,41 +179,41 @@ exports.getAddProduct = (req, res) => {
   res.render("seller/add-product", { title: "Add New Product" });
 };
 
-// Post new product
+// Post new product - STORES BASE64 IMAGES - FIXED
+
 exports.postAddProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock } = req.body;
-
-    // Convert uploaded images to Base64
-    const images = req.files
-      ? req.files.map(
-          (file) =>
-            `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
-        )
-      : [];
+    const sellerId = getSellerId(req);
 
     const newProduct = new Product({
-      name,
-      description,
-      price,
-      category,
-      stock,
-      images,
-      seller: req.user._id,
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      images: req.files.map(
+        (f) => `data:${f.mimetype};base64,${f.buffer.toString("base64")}`
+      ),
+      stock: req.body.stock || 0,
+      seller: new mongoose.Types.ObjectId(sellerId), // ✅ fix here
     });
 
     await newProduct.save();
+    console.log("✅ Product saved:", newProduct);
     res.redirect("/seller/products");
-  } catch (err) {
-    console.error(err);
-    res.render("error", { message: "Failed to add product" });
+  } catch (error) {
+    console.error("❌ Error adding product:", error);
+    res.status(500).render("error", { message: "Failed to add product" });
   }
 };
-
-// Get edit product form
+// Get edit product form - FIXED
 exports.getEditProduct = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
     const product = await Product.findOne({
       _id: req.params.id,
       seller: sellerId,
@@ -170,16 +228,46 @@ exports.getEditProduct = async (req, res) => {
       product,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Edit product error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
-// Post edit product
+// Post edit product - FIXED
 exports.postEditProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock, images } = req.body;
-    const sellerId = getSellerId(req);
+    const { name, description, price, category, stock } = req.body;
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
+    // Get existing product to preserve images if no new images uploaded
+    const existingProduct = await Product.findOne({
+      _id: req.params.id,
+      seller: sellerId,
+    });
+
+    if (!existingProduct) {
+      console.log("❌ Product not found for seller:", sellerId);
+      return res.status(404).render("error", { message: "Product not found" });
+    }
+
+    // Handle new images if uploaded
+    let images = existingProduct.images;
+    if (req.files && req.files.length > 0) {
+      console.log("✅ New images uploaded:", req.files.length);
+      images = [];
+      req.files.forEach((file) => {
+        const base64Image = `data:${
+          file.mimetype
+        };base64,${file.buffer.toString("base64")}`;
+        images.push(base64Image);
+      });
+    }
 
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id, seller: sellerId },
@@ -189,52 +277,58 @@ exports.postEditProduct = async (req, res) => {
         price,
         category,
         stock,
-        images: images ? images.split(",").map((img) => img.trim()) : [],
+        images,
       },
       { new: true }
     );
 
-    if (!product) {
+    console.log("Product updated:", product._id);
+    res.redirect("/seller/products");
+  } catch (error) {
+    console.error("Update product error:", error);
+    res.status(500).render("error", {
+      message: "Failed to update product: " + error.message,
+    });
+  }
+};
+
+// Delete product - FIXED
+exports.deleteProduct = async (req, res) => {
+  try {
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
+    const deletedProduct = await Product.findOneAndDelete({
+      _id: req.params.id,
+      seller: sellerId,
+    });
+
+    if (!deletedProduct) {
       return res.status(404).render("error", { message: "Product not found" });
     }
 
+    console.log("Product deleted:", deletedProduct._id);
     res.redirect("/seller/products");
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Failed to update product" });
+    console.error("Delete product error:", error);
+    res.status(500).render("error", {
+      message: "Failed to delete product: " + error.message,
+    });
   }
 };
 
-// Delete product
-exports.deleteProduct = async (req, res) => {
-  try {
-    const sellerId = getSellerId(req);
-    const product = await Product.findOne({
-      _id: req.params.id,
-      seller: sellerId,
-    });
-
-    if (product && product.images.length > 0) {
-      // Delete associated images
-      fileHelper.deleteFiles(product.images);
-    }
-
-    await Product.findOneAndDelete({
-      _id: req.params.id,
-      seller: sellerId,
-    });
-
-    res.redirect("/seller/products");
-  } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Failed to delete product" });
-  }
-};
-
-// Toggle product status
+// Toggle product status - FIXED
 exports.toggleProductStatus = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
     const product = await Product.findOne({
       _id: req.params.id,
       seller: sellerId,
@@ -247,17 +341,28 @@ exports.toggleProductStatus = async (req, res) => {
     product.status = product.status === "active" ? "inactive" : "active";
     await product.save();
 
+    console.log(
+      "Product status toggled:",
+      product._id,
+      "New status:",
+      product.status
+    );
     res.json({ success: true, status: product.status });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Toggle status error:", error);
+    res.status(500).json({ message: "Server error: " + error.message });
   }
 };
 
-// Get orders
+// Get orders - FIXED
 exports.getOrders = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
     const orders = await Order.find({ "items.seller": sellerId })
       .populate("user", "name email")
       .populate("items.product")
@@ -268,8 +373,10 @@ exports.getOrders = async (req, res) => {
       orders,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Orders error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
@@ -289,8 +396,10 @@ exports.getOrderDetails = async (req, res) => {
       order,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Order details error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
@@ -309,15 +418,19 @@ exports.updateOrderStatus = async (req, res) => {
 
     res.json({ success: true, status: order.status });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Update order status error:", error);
+    res.status(500).json({ message: "Server error: " + error.message });
   }
 };
 
-// Get analytics
+// Get analytics - FIXED
 exports.getAnalytics = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
 
     // Get sales data for the last 7 days
     const sevenDaysAgo = new Date();
@@ -354,15 +467,22 @@ exports.getAnalytics = async (req, res) => {
       topProducts: products,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Analytics error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
-// Get inventory
+// Get inventory - FIXED
 exports.getInventory = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
     const products = await Product.find({ seller: sellerId }).sort({
       stock: 1,
     });
@@ -372,16 +492,22 @@ exports.getInventory = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Inventory error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
-// Update inventory
+// Update inventory - FIXED
 exports.updateInventory = async (req, res) => {
   try {
     const { stock } = req.body;
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
 
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id, seller: sellerId },
@@ -395,31 +521,42 @@ exports.updateInventory = async (req, res) => {
 
     res.json({ success: true, stock: product.stock });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Update inventory error:", error);
+    res.status(500).json({ message: "Server error: " + error.message });
   }
 };
 
-// Get profile
+// Get profile - FIXED
 exports.getProfile = async (req, res) => {
   try {
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
+
     const seller = await User.findById(sellerId);
     res.render("seller/profile", {
       title: "Seller Profile",
       seller,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Server error" });
+    console.error("Profile error:", error);
+    res
+      .status(500)
+      .render("error", { message: "Server error: " + error.message });
   }
 };
 
-// Update profile
+// Update profile - FIXED
 exports.updateProfile = async (req, res) => {
   try {
     const { name, email, phone, shopName, shopDescription } = req.body;
-    const sellerId = getSellerId(req);
+    let sellerId = getSellerId(req);
+
+    if (typeof sellerId === "string") {
+      sellerId = new mongoose.Types.ObjectId(sellerId);
+    }
 
     await User.findByIdAndUpdate(sellerId, {
       name,
@@ -431,7 +568,9 @@ exports.updateProfile = async (req, res) => {
 
     res.redirect("/seller/profile");
   } catch (error) {
-    console.error(error);
-    res.status(500).render("error", { message: "Failed to update profile" });
+    console.error("Update profile error:", error);
+    res.status(500).render("error", {
+      message: "Failed to update profile: " + error.message,
+    });
   }
 };

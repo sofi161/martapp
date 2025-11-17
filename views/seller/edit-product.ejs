@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> - MartApp</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+      }
+
+      .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .form-header h1 {
+        font-size: 2rem;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .form-header h1 i {
+        color: #667eea;
+      }
+
+      .form-header p {
+        color: #666;
+        font-size: 1rem;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .back-link:hover {
+        background: rgba(102, 126, 234, 0.1);
+        transform: translateX(-5px);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .form-group label .required {
+        color: #ef4444;
+        margin-left: 0.25rem;
+      }
+
+      .form-group input[type="text"],
+      .form-group input[type="number"],
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .form-group input[type="file"] {
+        width: 100%;
+        padding: 1rem;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f9fafb;
+      }
+
+      .form-group input[type="file"]:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+      }
+
+      .current-images {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+
+      .current-image {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #e5e7eb;
+      }
+
+      .current-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-badge {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .help-text {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .help-text i {
+        color: #667eea;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f0f0;
+      }
+
+      .btn {
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        flex: 1;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+      }
+
+      .btn-secondary:hover {
+        background: #e5e7eb;
+        transform: translateY(-2px);
+      }
+
+      .alert {
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .alert-info {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 2px solid #93c5fd;
+      }
+
+      .alert i {
+        font-size: 1.25rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .form-card {
+          padding: 1.5rem;
+        }
+
+        .form-header h1 {
+          font-size: 1.5rem;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+
+        .current-images {
+          justify-content: center;
+        }
+      }
+
+      /* Animation */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .form-card {
+        animation: fadeInUp 0.6s ease forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="/seller/products" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Products</span>
+      </a>
+
+      <div class="form-card">
+        <div class="form-header">
+          <h1>
+            <i class="fas fa-edit"></i>
+            Edit Product
+          </h1>
+          <p>Update your product information and images</p>
+        </div>
+
+        <form
+          action="/seller/products/edit/<%= product._id %>"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <!-- Current Images Display -->
+          <% if (product.images && product.images.length > 0) { %>
+          <div class="form-group">
+            <label>Current Images</label>
+            <div class="current-images">
+              <% product.images.forEach((image, index) => { %>
+              <div class="current-image">
+                <img src="<%= image %>" alt="Product image <%= index + 1 %>" />
+                <span class="image-badge">Image <%= index + 1 %></span>
+              </div>
+              <% }) %>
+            </div>
+          </div>
+          <% } %>
+
+          <!-- Product Name -->
+          <div class="form-group">
+            <label>
+              Product Name
+              <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              value="<%= product.name %>"
+              placeholder="e.g., Premium Wireless Headphones"
+              required
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label>
+              Description
+              <span class="required">*</span>
+            </label>
+            <textarea
+              name="description"
+              placeholder="Describe your product in detail..."
+              required
+            ><%= product.description %></textarea>
+            <p class="help-text">
+              <i class="fas fa-info-circle"></i>
+              <span>Provide a detailed description to help customers understand your product</span>
+            </p>
+          </div>
+
+          <!-- Price and Stock -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                Price (₹)
+                <span class="required">*</span>
+              </label>
+              <input
+                type="number"
+                name="price"
+                value="<%= product.price %>"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>
+                Stock Quantity
+                <span class="required">*</span>
+              </label>
+              <input
+                type="number"
+                name="stock"
+                value="<%= product.stock %>"
+                min="0"
+                placeholder="0"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label>
+              Category
+              <span class="required">*</span>
+            </label>
+            <select name="category" required>
+              <option value="">Select a category</option>
+              <option value="electronics" <%= product.category === 'electronics' ? 'selected' : '' %>>Electronics</option>
+              <option value="clothing" <%= product.category === 'clothing' ? 'selected' : '' %>>Clothing</option>
+              <option value="books" <%= product.category === 'books' ? 'selected' : '' %>>Books</option>
+              <option value="home" <%= product.category === 'home&garden' ? 'selected' : '' %>>Home & Garden</option>
+              <option value="sports" <%= product.category === 'sports' ? 'selected' : '' %>>Sports</option>
+              <option value="beauty" <%= product.category === 'beauty' ? 'selected' : '' %>>Beauty</option>
+              <option value="toys" <%= product.category === 'toys' ? 'selected' : '' %>>Toys</option>
+              <option value="food" <%= product.category === 'food' ? 'selected' : '' %>>Food</option>
+              <option value="other" <%= product.category === 'other' ? 'selected' : '' %>>Other</option>
+            </select>
+          </div>
+
+          <!-- New Images Upload -->
+          <div class="form-group">
+            <label>Replace Images (Optional)</label>
+            <input
+              type="file"
+              name="images"
+              multiple
+              accept="image/*"
+            />
+            <p class="help-text">
+              <i class="fas fa-info-circle"></i>
+              <span>Upload new images to replace existing ones. Leave empty to keep current images.</span>
+            </p>
+          </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-lightbulb"></i>
+            <span>If you upload new images, they will replace all existing images.</span>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              <span>Save Changes</span>
+            </button>
+            <a href="/seller/products" class="btn btn-secondary">
+              <i class="fas fa-times"></i>
+              <span>Cancel</span>
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

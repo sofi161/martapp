@@ -19,7 +19,17 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["electronics", "fashion", "home", "sports", "books"],
+    enum: [
+      "electronics",
+      "clothing",
+      "home&garden",
+      "sports",
+      "books",
+      "toys",
+      "food",
+      "beauty",
+      "other",
+    ],
     lowercase: true,
   },
   images: {
@@ -35,7 +45,7 @@ const productSchema = new mongoose.Schema({
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: false,
+    required: true,
   },
   createdAt: {
     type: Date,

@@ -20,10 +20,16 @@ router.post("/products/delete/:id", sellerController.deleteProduct);
 router.post("/products/toggle/:id", sellerController.toggleProductStatus);
 
 // Add product route with image upload
+
 router.post(
   "/products/add",
   upload.array("images", 5),
   sellerController.postAddProduct
+);
+router.post(
+  "/products/edit/:id",
+  upload.array("images", 5),
+  sellerController.postEditProduct
 );
 
 // Order Management
